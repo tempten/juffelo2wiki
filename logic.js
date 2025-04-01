@@ -1,15 +1,18 @@
 const fomelo2templateHash = {
     "ac": "armor-class",
     "agi":"agi",
+    "aggression":"aggression",
     "atk delay": "attack-delay",
+    "cha":"cha",
     "class":"class",
     "critical strike":"critical-strike",
     "dex":"dex",
     "dmg":"damage",
     "effect":"focus-effect",
     "flowing thought":"mana-regen",
-    "hp":"hp",
+    "hp":"health",
     "icon":"icon",
+    "int":"int",
     "item-flag":"item-flag",
     "item-name":"item-name",
     "mana":"mana",
@@ -26,15 +29,16 @@ const fomelo2templateHash = {
     "skill": "weapon-skill",
     "skill mod":"skill-modifier-type",
     "slot":"slot",
+    "spell ward":"spellward",
+    "sta":"sta",
     "str":"str",
+    "stun resist": "stun-resist",
     "weight":"weight",
+    "wis":"wis",
     "unassigned": [
         "hp-regen",
         "mind-shield",
         "damage-reduction",
-        "spellward",
-        "aggression",
-        "stun-resist",
         "augment-slot-types",
         "skill-modifier-amount",
         "bane-damage-type",
@@ -112,5 +116,28 @@ function itemToReadable (){
         });
         //augs will be at details index 2+, so you can loop on those too  
     });
-    console.log(results);
+
+    return results;
 }
+
+
+
+function printTemplate(arr) {
+    let itemTemplates = {};
+    let startOfTemplate = "{{Item\n";
+    let endOfTemplate = "}}"
+    arr.forEach(item => {
+
+        let thisTemplate = startOfTemplate;
+        Object.keys(item).forEach(key => {
+            thisTemplate += `|${key}=${item[key]}\n`;
+        });
+        thisTemplate += endOfTemplate;
+        itemTemplates[item["item-name"]] = thisTemplate;
+    })
+
+    console.log(itemTemplates);
+}
+
+let result = itemToReadable();
+printTemplate(result);
