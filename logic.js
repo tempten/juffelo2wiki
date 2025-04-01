@@ -14,6 +14,10 @@ const fomelo2templateHash = {
     "item-name":"item-name",
     "mana":"mana",
     "mr":"save-v-magic",
+    "cr":"save-v-cold",
+    "fr":"save-v-fire",
+    "pr":"save-v-poison",
+    "dr":"save-v-disease",
     "race":"race",
     "ratio":"ratio_",
     "recommended-level":"recommended-level",
@@ -23,7 +27,19 @@ const fomelo2templateHash = {
     "skill mod":"skill-modifier-type",
     "slot":"slot",
     "str":"str",
-    "weight":"weight"
+    "weight":"weight",
+    "unassigned": [
+        "hp-regen",
+        "mind-shield",
+        "damage-reduction",
+        "spellward",
+        "aggression",
+        "stun-resist",
+        "augment-slot-types",
+        "skill-modifier-amount",
+        "bane-damage-type",
+        "bane-damage-amount"
+    ]
 };
 
 
