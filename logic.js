@@ -42,7 +42,9 @@ const fomelo2templateHash = {
         "augment-slot-types",
         "skill-modifier-amount",
         "bane-damage-type",
-        "bane-damage-amount"
+        "bane-damage-amount",
+        "elemental-damage-type",
+        "elemental-damage-amount"
     ]
 };
 
