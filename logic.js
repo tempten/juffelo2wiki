@@ -5,22 +5,29 @@ const fomelo2templateHash = {
     "atk delay": "attack-delay",
     "cha":"cha",
     "class":"class",
+    "cold dmg":"elemental-damage-type=Cold\n|elemental-damage-amount",
+    "cr":"save-v-cold",
     "critical strike":"critical-strike",
+    "damage reduction":"damage-reduction",
     "dex":"dex",
+    "disease dmg":"elemental-damage-type=Disease\n|elemental-damage-amount",
     "dmg":"damage",
+    "dr":"save-v-disease",
     "effect":"focus-effect",
+    "fire dmg":"elemental-damage-type=Fire\n|elemental-damage-amount",
     "flowing thought":"mana-regen",
+    "fr":"save-v-fire",
     "hp":"health",
     "icon":"icon",
     "int":"int",
     "item-flag":"item-flag",
     "item-name":"item-name",
+    "magic dmg":"elemental-damage-type=Magic\n|elemental-damage-amount",
     "mana":"mana",
+    "mind shield":"mind-shield",
     "mr":"save-v-magic",
-    "cr":"save-v-cold",
-    "fr":"save-v-fire",
+    "poison dmg":"elemental-damage-type=Poison\n|elemental-damage-amount",
     "pr":"save-v-poison",
-    "dr":"save-v-disease",
     "race":"race",
     "ratio":"ratio_",
     "recommended-level":"recommended-level",
@@ -33,18 +40,28 @@ const fomelo2templateHash = {
     "sta":"sta",
     "str":"str",
     "stun resist": "stun-resist",
+    "type 1 aug slot":"augment-slot-types",
+    "type 2 aug slot":"augment-slot-types",
+    "type 3 aug slot":"augment-slot-types",
+    "type 4 aug slot":"augment-slot-types",
+    "type 5 aug slot":"augment-slot-types",
+    "type 6 aug slot":"augment-slot-types",
+    "type 7 aug slot":"augment-slot-types",
+    "type 8 aug slot":"augment-slot-types",
+    "type 9 aug slot":"augment-slot-types",
+    "type 10 aug slot":"augment-slot-types",
+    "type 11 aug slot":"augment-slot-types",
+    "type 12 aug slot":"augment-slot-types",
+    "type 13 aug slot":"augment-slot-types",
+    "type 29 aug slot":"augment-slot-types",
     "weight":"weight",
     "wis":"wis",
     "unassigned": [
         "hp-regen",
-        "mind-shield",
-        "damage-reduction",
         "augment-slot-types",
         "skill-modifier-amount",
         "bane-damage-type",
-        "bane-damage-amount",
-        "elemental-damage-type",
-        "elemental-damage-amount"
+        "bane-damage-amount"
     ]
 };
 
@@ -88,7 +105,13 @@ function itemToReadable (){
         detailsArr.forEach((detail) => {
             if(detail.length >= 2) {
                 let key = fomelo2templateHash[detail[0].toLocaleLowerCase()];
-                detailsObj[key] = detail.slice(1).map(desc => desc.trim()).join(' ').replace('+','');
+                if(key === 'augment-slot-types') {
+                    let val = detailsObj[key] ? detailsObj[key] : '';
+                    detailsObj[key] = val + ',' + detail[0].replace(/[^\d]+(\d+)[^\d]+/, "$1");
+                    console.log(detail,detailsObj[key]);
+                } else {
+                    detailsObj[key] = detail.slice(1).map(desc => desc.trim()).join(' ').replace('+','').replace('%','');
+                }
             } else if(detail.length === 1) {
                 detailsObj['misc'].push(detail[0])
             }
@@ -96,7 +119,7 @@ function itemToReadable (){
 
         detailsObj['misc'].forEach((miscItem, index) => {
             if(index === 0) {
-                detailsObj['item-flag'] = miscItem.replaceAll('[', '').replaceAll(']', '').trim();
+                detailsObj['item-flag'] = miscItem.replaceAll('[', ',').replaceAll(']', '').trim();
                 return;
             }
 
@@ -110,6 +133,9 @@ function itemToReadable (){
                 return;
             }
         });
+        if(typeof detailsObj['slot'] !== 'undefined') {
+            detailsObj['slot'] = detailsObj['slot'].replaceAll(' ', ',');
+        }
 
         results.push({
             'item-name': details[0].textContent.replaceAll('\n',''),
@@ -131,7 +157,7 @@ function printTemplate(arr) {
     arr.forEach(item => {
 
         let thisTemplate = startOfTemplate;
-        Object.keys(item).forEach(key => {
+        Object.keys(item).sort().forEach(key => {
             thisTemplate += `|${key}=${item[key]}\n`;
         });
         thisTemplate += endOfTemplate;
