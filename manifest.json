@@ -6,7 +6,6 @@
     "action": {
       "default_icon": "icon.png"
     },
-    "permissions": ["scripting", "activeTab"],
     "content_scripts": [
       {
         "js": ["logic.js"],
