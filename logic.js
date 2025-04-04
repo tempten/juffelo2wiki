@@ -13,9 +13,10 @@ const fomelo2templateHash = {
     "disease dmg":"elemental-damage-type=Disease\n|elemental-damage-amount",
     "dmg":"damage",
     "dr":"save-v-disease",
-    "effect":"focus-effect",
+    "effect":"effect",
     "fire dmg":"elemental-damage-type=Fire\n|elemental-damage-amount",
     "flowing thought":"mana-regen",
+    "focus effect":"focus-effect",
     "fr":"save-v-fire",
     "hp":"health",
     "icon":"icon",
@@ -107,8 +108,15 @@ function itemToReadable (){
                 let key = fomelo2templateHash[detail[0].toLocaleLowerCase()];
                 if(key === 'augment-slot-types') {
                     let val = detailsObj[key] ? detailsObj[key] : '';
-                    detailsObj[key] = val + ',' + detail[0].replace(/[^\d]+(\d+)[^\d]+/, "$1");
+                    detailsObj[key] = val + detail[0].replace(/[^\d]+(\d+)[^\d]+/, "$1") + ',';
                     console.log(detail,detailsObj[key]);
+                } else if (key === 'focus-effect') {
+                    // split on "Effect"
+                    let splitDetail = detail[1].split("Effect");
+                    if(splitDetail.length > 1) {
+                        detailsObj["effect"] = splitDetail[1].trim();
+                    }
+                    detailsObj["focus-effect"] = splitDetail[0];
                 } else {
                     detailsObj[key] = detail.slice(1).map(desc => desc.trim()).join(' ').replace('+','').replace('%','');
                 }
@@ -150,7 +158,7 @@ function itemToReadable (){
 
 
 
-function printTemplate(arr) {
+function generateTemplatesFor(arr) {
     let itemTemplates = {};
     let startOfTemplate = "{{Item\n";
     let endOfTemplate = "}}"
@@ -165,7 +173,51 @@ function printTemplate(arr) {
     })
 
     console.log(itemTemplates);
+    return itemTemplates;
 }
 
+
+function fallbackCopyTextToClipboard(text) {
+    var textArea = document.createElement("textarea");
+    textArea.value = text;
+    
+    // Avoid scrolling to bottom
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.position = "fixed";
+  
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+  
+    try {
+      var successful = document.execCommand('copy');
+      var msg = successful ? 'successful' : 'unsuccessful';
+      console.log('Fallback: Copying text command was ' + msg);
+    } catch (err) {
+      console.error('Fallback: Oops, unable to copy', err);
+    }
+  
+    document.body.removeChild(textArea);
+  }
+  function copyTextToClipboard(itemName) {
+    let text = templates[itemName];
+    if (!navigator.clipboard) {
+      fallbackCopyTextToClipboard(text);
+      return;
+    }
+    navigator.clipboard.writeText(text).then(function() {
+      console.log('Async: Copying to clipboard was successful!');
+    }, function(err) {
+      console.error('Async: Could not copy text: ', err);
+    });
+  }
+
+
 let result = itemToReadable();
-printTemplate(result);
+let templates = generateTemplatesFor(result);
+
+document.querySelectorAll('.general_info a').forEach(element => {
+    let itemName = element.getAttribute("href").split('/').slice(-1)[0].replaceAll("_", " ");
+    element.setAttribute("onclick", `copyTextToClipboard("${itemName}")`);
+})
