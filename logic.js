@@ -1,8 +1,11 @@
-const fomelo2templateHash = {
+
+function _fomelo2wiki () {
+  const fomelo2templateHash = {
     "ac": "armor-class",
     "agi":"agi",
     "aggression":"aggression",
     "atk delay": "attack-delay",
+    "bane dmg": "bane-damage-amount",
     "cha":"cha",
     "class":"class",
     "cold dmg":"elemental-damage-type=Cold\n|elemental-damage-amount",
@@ -60,124 +63,132 @@ const fomelo2templateHash = {
     "unassigned": [
         "hp-regen",
         "augment-slot-types",
-        "skill-modifier-amount",
         "bane-damage-type",
         "bane-damage-amount"
     ]
-};
-
-
-function itemToReadable (){
+  };
+  
+  
+  function itemToReadable (){
     let results = [];
-    document.querySelectorAll('.tip').forEach((itemNode) => {
-        let details = itemNode.querySelectorAll('font');
+    document.querySelectorAll(".tip").forEach((itemNode) => {
+        let details = itemNode.querySelectorAll("font");
         let iconNumRegex = /.*item_(\d+)\.png/;
-        let iconNode = details[1].querySelector('img');
-        let icon = '3795'; //broken heart default icon
+        let iconNode = details[1].querySelector("img");
+        let icon = "3795"; //broken heart default icon
         if(iconNode !== null && iconNode.src) {
             icon = iconNode.src.replace(iconNumRegex, "$1");
         }
-        let stats = details[1].querySelectorAll('br ~ b');
-        let detailsText = details[1].textContent.replaceAll('\n','');
+        let stats = details[1].querySelectorAll("br ~ b");
+        let detailsText = details[1].textContent.replaceAll("\n","");
         let detailsArr = [];
         let detailsObj = { misc: []};
         
-
-
         stats.forEach((stat) => {
             let textContent = stat.textContent;
             detailsText = detailsText.replace(`${textContent}`, `~~${textContent}`);
         });
-
-        detailsArr = detailsText.split('~~');
+        detailsText = detailsText.replace(`Focus ~~Effect`, `Focus Effect`);
+        detailsArr = detailsText.split("~~");
         detailsArr = detailsArr.map((detail) => {
-            return detail.split('\:');
+            return detail.split("\:");
         });
-
-        let loreNode = itemNode.querySelector('.lore');
+  
+        let loreNode = itemNode.querySelector(".lore");
         let loreText = null;
         if(loreNode) {
             loreText = loreNode.textContent;
             detailsObj.lore = loreText;
-            detailsArr[detailsArr.length-1][1] = detailsArr[detailsArr.length-1][1].replace(loreText, '');
+            detailsArr[detailsArr.length-1][1] = detailsArr[detailsArr.length-1][1].replace(loreText, "");
         }
-
-
+  
+  
         detailsArr.forEach((detail) => {
             if(detail.length >= 2) {
                 let key = fomelo2templateHash[detail[0].toLocaleLowerCase()];
-                if(key === 'augment-slot-types') {
-                    let val = detailsObj[key] ? detailsObj[key] : '';
-                    detailsObj[key] = val + detail[0].replace(/[^\d]+(\d+)[^\d]+/, "$1") + ',';
-                    console.log(detail,detailsObj[key]);
-                } else if (key === 'focus-effect') {
+                if(key === "augment-slot-types") {
+                    let val = detailsObj[key] ? detailsObj[key] : "";
+                    detailsObj[key] = val + detail[0].replace(/[^\d]+(\d+)[^\d]+/, "$1") + ",";
+                } else if(key === "skill-modifier-type") {
+                  let trimmedVal = detail[1].trim();
+                  let val = trimmedVal.slice(trimmedVal.lastIndexOf(" "));
+                  detailsObj["skill-modifier-type"] = trimmedVal.slice(0, trimmedVal.lastIndexOf(" "));
+                  detailsObj["skill-modifier-amount"] = val.replaceAll("+", "");
+                } else if(key === "bane-damage-amount") {
+                  let trimmedVal = detail[1].trim();
+                  let val = trimmedVal.slice(0, trimmedVal.indexOf(" "));
+                  detailsObj["bane-damage-type"] = trimmedVal.slice(trimmedVal.indexOf(" "));
+                  detailsObj["bane-damage-amount"] = val.replaceAll("+", "");
+                } else if (key === "focus-effect") {
                     // split on "Effect"
                     let splitDetail = detail[1].split("Effect");
                     if(splitDetail.length > 1) {
-                        detailsObj["effect"] = splitDetail[1].trim();
+                        detailsObj["effect"] = detail[2].trim();
                     }
-                    detailsObj["focus-effect"] = splitDetail[0];
+                    detailsObj["focus-effect"] = splitDetail[0].trim();
                 } else {
-                    detailsObj[key] = detail.slice(1).map(desc => desc.trim()).join(' ').replace('+','').replace('%','');
+                    detailsObj[key] = detail.slice(1).map(desc => desc.trim()).join(" ").replace("+","").replace("%","");
                 }
             } else if(detail.length === 1) {
-                detailsObj['misc'].push(detail[0])
+                detailsObj["misc"].push(detail[0])
             }
         });
-
-        detailsObj['misc'].forEach((miscItem, index) => {
+  
+        detailsObj["misc"].forEach((miscItem, index) => {
             if(index === 0) {
-                detailsObj['item-flag'] = miscItem.replaceAll('[', ',').replaceAll(']', '').trim();
+                detailsObj["item-flag"] = miscItem.replaceAll("[", ",").replaceAll("]", "").trim();
                 return;
             }
-
-            if(miscItem.search('Recommended') >= 0) {
-                detailsObj['recommended-level'] = miscItem.replace(/[^\d]+(\d+)/, "$1");
+  
+            if(miscItem.search("Recommended") >= 0) {
+                detailsObj["recommended-level"] = miscItem.replace(/[^\d]+(\d+)/, "$1");
                 return;
             }
-
-            if(miscItem.search('Required') >= 0) {
-                detailsObj['required-level'] = miscItem.replace(/[^\d]+(\d+)/, "$1");
+  
+            if(miscItem.search("Required") >= 0) {
+                detailsObj["required-level"] = miscItem.replace(/[^\d]+(\d+)/, "$1");
                 return;
             }
         });
-        if(typeof detailsObj['slot'] !== 'undefined') {
-            detailsObj['slot'] = detailsObj['slot'].replaceAll(' ', ',');
+        if(typeof detailsObj["slot"] !== "undefined") {
+            detailsObj["slot"] = detailsObj["slot"].replaceAll(" ", ",");
         }
 
+        delete detailsObj['misc'];
+  
         results.push({
-            'item-name': details[0].textContent.replaceAll('\n',''),
+            "item-name": details[0].textContent.replaceAll("\n",""),
             icon: icon,
             ...detailsObj
         });
         //augs will be at details index 2+, so you can loop on those too  
     });
-
+  
     return results;
-}
-
-
-
-function generateTemplatesFor(arr) {
+  }
+  
+  
+  
+  function generateTemplatesFor(arr) {
     let itemTemplates = {};
     let startOfTemplate = "{{Item\n";
     let endOfTemplate = "}}"
     arr.forEach(item => {
-
+  
         let thisTemplate = startOfTemplate;
         Object.keys(item).sort().forEach(key => {
-            thisTemplate += `|${key}=${item[key]}\n`;
+            thisTemplate += `|${key}=${item[key].trim()}\n`;
         });
         thisTemplate += endOfTemplate;
         itemTemplates[item["item-name"]] = thisTemplate;
     })
-
+  
     console.log(itemTemplates);
     return itemTemplates;
-}
-
-
-function fallbackCopyTextToClipboard(text) {
+  }
+  
+  
+  function fallbackCopyTextToClipboard(text) {
     var textArea = document.createElement("textarea");
     textArea.value = text;
     
@@ -191,11 +202,11 @@ function fallbackCopyTextToClipboard(text) {
     textArea.select();
   
     try {
-      var successful = document.execCommand('copy');
-      var msg = successful ? 'successful' : 'unsuccessful';
-      console.log('Fallback: Copying text command was ' + msg);
+      var successful = document.execCommand("copy");
+      var msg = successful ? "successful" : "unsuccessful";
+      console.log("Fallback: Copying text command was " + msg);
     } catch (err) {
-      console.error('Fallback: Oops, unable to copy', err);
+      console.error("Fallback: Oops, unable to copy", err);
     }
   
     document.body.removeChild(textArea);
@@ -207,17 +218,23 @@ function fallbackCopyTextToClipboard(text) {
       return;
     }
     navigator.clipboard.writeText(text).then(function() {
-      console.log('Async: Copying to clipboard was successful!');
+      console.log("Async: Copying to clipboard was successful!");
     }, function(err) {
-      console.error('Async: Could not copy text: ', err);
+      console.error("Async: Could not copy text: ", err);
     });
   }
+  
+  window._fomelo2wiki.copyTextToClipboard = copyTextToClipboard;
+  let result = itemToReadable();
+  let templates = generateTemplatesFor(result);
+  
+  document.querySelectorAll(".general_info a").forEach(element => {
+    element.addEventListener("click", () => {
+      let itemName = element.getAttribute("href").split("/").slice(-1)[0].replaceAll("_", " ");
+      copyTextToClipboard(itemName);
+    })
+  });
+}
 
-
-let result = itemToReadable();
-let templates = generateTemplatesFor(result);
-
-document.querySelectorAll('.general_info a').forEach(element => {
-    let itemName = element.getAttribute("href").split('/').slice(-1)[0].replaceAll("_", " ");
-    element.setAttribute("onclick", `copyTextToClipboard("${itemName}")`);
-})
+console.log("fomelo2wiki loaded");
+_fomelo2wiki();
