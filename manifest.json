@@ -9,7 +9,7 @@
     "permissions": ["scripting", "activeTab"],
     "content_scripts": [
       {
-        "js": ["plugin.js"],
+        "js": ["logic.js"],
         "matches": [
             "https://*.dalaya.org/fomelo/*",
             "https://dalaya.org/fomelo/*",
