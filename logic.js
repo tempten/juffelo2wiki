@@ -21,8 +21,10 @@ function _fomelo2wiki () {
     "flowing thought":"mana-regen",
     "focus effect":"focus-effect",
     "fr":"save-v-fire",
+    "haste":"haste",
     "hp":"health",
     "icon":"icon",
+    "instrument modifier": "instrument-modifier-type",
     "int":"int",
     "item-flag":"item-flag",
     "item-name":"item-name",
@@ -64,7 +66,8 @@ function _fomelo2wiki () {
         "hp-regen",
         "augment-slot-types",
         "bane-damage-type",
-        "bane-damage-amount"
+        "bane-damage-amount",
+        "instrument modifier"
     ]
   };
   
@@ -101,8 +104,7 @@ function _fomelo2wiki () {
             detailsObj.lore = loreText;
             detailsArr[detailsArr.length-1][1] = detailsArr[detailsArr.length-1][1].replace(loreText, "");
         }
-  
-  
+
         detailsArr.forEach((detail) => {
             if(detail.length >= 2) {
                 let key = fomelo2templateHash[detail[0].toLocaleLowerCase()];
@@ -119,6 +121,11 @@ function _fomelo2wiki () {
                   let val = trimmedVal.slice(0, trimmedVal.indexOf(" "));
                   detailsObj["bane-damage-type"] = trimmedVal.slice(trimmedVal.indexOf(" "));
                   detailsObj["bane-damage-amount"] = val.replaceAll("+", "");
+                } else if(key === "instrument-modifier-type") {
+                  let trimmedVal = detail[1].trim();
+                  let val = trimmedVal.slice(trimmedVal.lastIndexOf(" "));
+                  detailsObj["instrument-modifier-type"] = trimmedVal.slice(0, trimmedVal.lastIndexOf(" "));
+                  detailsObj["instrument-modifier-amount"] = val.replaceAll("+", "").replaceAll("(", "").replaceAll(")","");
                 } else if (key === "focus-effect") {
                     // split on "Effect"
                     let splitDetail = detail[1].split("Effect");
