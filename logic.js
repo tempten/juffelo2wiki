@@ -64,10 +64,7 @@ function _fomelo2wiki () {
     "wis":"wis",
     "unassigned": [
         "hp-regen",
-        "augment-slot-types",
-        "bane-damage-type",
-        "bane-damage-amount",
-        "instrument modifier"
+        "augment-slot-types"
     ]
   };
   
