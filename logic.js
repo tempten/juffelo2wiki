@@ -161,8 +161,13 @@ function _fomelo2wiki () {
             detailsObj["slot"] = detailsObj["slot"].replaceAll(" ", ",");
         }
 
-        detailsObj["class"] = detailsObj["class"].replaceAll(" ", ",");
-        detailsObj["race"] = detailsObj["race"].replaceAll(" ", ",");
+        if(typeof detailsObj["class"] !== 'undefined' ) {
+
+          detailsObj["class"] = detailsObj["class"].replaceAll(" ", ",");
+        }
+        if(typeof detailsObj["race"] !== 'undefined' ) {
+          detailsObj["race"] = detailsObj["race"].replaceAll(" ", ",");
+        }
 
         delete detailsObj['misc'];
   
@@ -246,7 +251,5 @@ function _fomelo2wiki () {
   });
 }
 
-console.log("fomelo2wiki loaded");
-_fomelo2wiki();
 console.log("fomelo2wiki loaded");
 _fomelo2wiki();
