@@ -85,7 +85,7 @@ function _fomelo2wiki () {
         let stats = details[1].querySelectorAll("br ~ b");
         let detailsText = details[1].textContent.replaceAll("\n","");
         let detailsArr = [];
-        let detailsObj = { misc: []};
+        let detailsObj = { misc: [], loot: ""};
         
         stats.forEach((stat) => {
             let textContent = stat.textContent;
