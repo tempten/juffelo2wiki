@@ -172,7 +172,7 @@ function _fomelo2wiki () {
         delete detailsObj['misc'];
   
         results.push({
-            "item-name": details[0].textContent.replaceAll("\n",""),
+            "item-name": details[0].textContent.replaceAll("\n","").replaceAll("`","'"),
             icon: icon,
             ...detailsObj
         });
