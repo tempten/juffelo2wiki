@@ -158,7 +158,7 @@ function _fomelo2wiki () {
             }
         });
         if(typeof detailsObj["slot"] !== "undefined") {
-            detailsObj["slot"] = detailsObj["slot"].replaceAll(" ", ",");
+            detailsObj["slot"] = detailsObj["slot"].replaceAll(" ", ",").replaceAll("Legs", "Leg").replaceAll("Shoulder", "Shoulders");
         }
 
         if(typeof detailsObj["class"] !== 'undefined' ) {
