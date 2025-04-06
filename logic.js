@@ -64,7 +64,10 @@ function _fomelo2wiki () {
     "wis":"wis",
     "unassigned": [
         "hp-regen",
-        "augment-slot-types"
+        "augment-slot-types",
+        "bane-damage-type",
+        "bane-damage-amount",
+        "instrument modifier"
     ]
   };
   
@@ -140,7 +143,7 @@ function _fomelo2wiki () {
   
         detailsObj["misc"].forEach((miscItem, index) => {
             if(index === 0) {
-                detailsObj["item-flag"] = miscItem.replaceAll("[", ",").replaceAll("]", "").trim();
+                detailsObj["item-flag"] = miscItem.replaceAll(" [", ",").replaceAll("]", "").replaceAll('[','').trim();
                 return;
             }
   
@@ -157,6 +160,9 @@ function _fomelo2wiki () {
         if(typeof detailsObj["slot"] !== "undefined") {
             detailsObj["slot"] = detailsObj["slot"].replaceAll(" ", ",");
         }
+
+        detailsObj["class"] = detailsObj["class"].replaceAll(" ", ",");
+        detailsObj["race"] = detailsObj["race"].replaceAll(" ", ",");
 
         delete detailsObj['misc'];
   
@@ -240,5 +246,7 @@ function _fomelo2wiki () {
   });
 }
 
+console.log("fomelo2wiki loaded");
+_fomelo2wiki();
 console.log("fomelo2wiki loaded");
 _fomelo2wiki();
