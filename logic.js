@@ -84,6 +84,17 @@ function _fomelo2wiki () {
         }
         let stats = details[1].querySelectorAll("br ~ b");
         let detailsText = details[1].textContent.replaceAll("\n","");
+
+        let extraAugs = [];
+        if(details.length > 2) {
+          for(let x = 0; x < details.length; x++) {
+            let augStr = details[x].textContent.split("Type:")[1];
+            if(augStr) {
+              augStr = augStr.replace(/(\d+).*/, "$1");
+              extraAugs.push(augStr);
+            }
+          }
+        }
         let detailsArr = [];
         let detailsObj = { misc: [], loot: ""};
         
@@ -140,6 +151,14 @@ function _fomelo2wiki () {
                 detailsObj["misc"].push(detail[0])
             }
         });
+
+        if(extraAugs.length > 0) {
+          if(typeof detailsObj["augment-slot-types"] !== "undefined") {
+            detailsObj["augment-slot-types"] = detailsObj["augment-slot-types"] + "," + extraAugs.join(",").replaceAll(" ", "");;
+          } else {
+            detailsObj["augment-slot-types"] = extraAugs.join(",").replaceAll(" ", "");
+          }
+        }
   
         detailsObj["misc"].forEach((miscItem, index) => {
             if(index === 0) {
