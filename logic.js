@@ -220,6 +220,7 @@ function _fomelo2wiki () {
 			    else {
             thisTemplate += `|${key}=${item[key].trim()}\n`;
 			}
+		});
         thisTemplate += endOfTemplate;
         itemTemplates[item["item-name"]] = thisTemplate;
     })
