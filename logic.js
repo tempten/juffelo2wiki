@@ -211,8 +211,15 @@ function _fomelo2wiki () {
   
         let thisTemplate = startOfTemplate;
         Object.keys(item).sort().forEach(key => {
+			    if (`${key}` === "effect"){
+				    const effectArray = item[key].split(/[\(,)]+/);
+				    thisTemplate += `|effect=${effectArray[0].trim()}\n`;
+				    thisTemplate += `|effect-activation=${effectArray[1].trim()}\n`;
+				    thisTemplate += `|effect-cast=${effectArray[2].trim()}\n`;
+			}
+			    else {
             thisTemplate += `|${key}=${item[key].trim()}\n`;
-        });
+			}
         thisTemplate += endOfTemplate;
         itemTemplates[item["item-name"]] = thisTemplate;
     })
